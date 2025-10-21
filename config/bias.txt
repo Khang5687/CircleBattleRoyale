@@ -1,0 +1,10 @@
+# Bias Configuration
+# Format: playerName biasMultiplier
+# biasMultiplier > 1.0 increases chances of winning
+# biasMultiplier = 1.0 is neutral (no bias)
+# biasMultiplier < 1.0 decreases chances of winning
+
+# Example entries:
+# player_001 2.0
+# player_042 1.5
+# player_100 0.5

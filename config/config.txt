@@ -1,0 +1,20 @@
+# CUDA Battle Royale Simulation Configuration
+# This file contains the main simulation parameters
+
+# Number of circles (players) to simulate
+# Valid range: 1 - 1,000,000
+initialCircleCount=10000
+
+# Arena dimensions in pixels
+arenaWidth=10000.0
+arenaHeight=10000.0
+
+# Base circle properties
+baseCircleRadius=50.0
+baseCircleMass=1.0
+elasticity=0.95
+baseHealth=100.0
+
+# Physics parameters
+# deltaTime is calculated automatically based on frame rate
+# gravity is not used in this 2D simulation
