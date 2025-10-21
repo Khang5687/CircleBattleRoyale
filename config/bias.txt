@@ -5,6 +5,6 @@
 # biasMultiplier < 1.0 decreases chances of winning
 
 # Example entries:
-# player_001 2.0
-# player_042 1.5
-# player_100 0.5
+player_001 2.0
+player_042 1.5
+player_100 0.5

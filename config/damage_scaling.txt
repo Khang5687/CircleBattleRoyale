@@ -3,9 +3,9 @@
 # When remaining circles drop below threshold, damage is multiplied
 
 # Example: Increase damage as population decreases
-# 100000 1.0
-# 50000 1.5
-# 10000 2.0
-# 1000 3.0
-# 100 5.0
-# 10 10.0
+100000 1.0
+50000 1.5
+10000 2.0
+1000 3.0
+100 5.0
+10 10.0

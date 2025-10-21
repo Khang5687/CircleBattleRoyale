@@ -2,15 +2,20 @@
 
 - [x] 1. Set up project structure and development environment
 
-
   - Create CMake build system with CUDA, OpenGL, and GLFW dependencies
   - Configure compiler flags for compute capability 8.6 (RTX 3060)
   - Set up directory structure: src/, include/, shaders/, assets/, config/
   - _Requirements: 10.1, 10.2, 10.3_
 
-- [ ] 2. Implement configuration management system
+- [x] 2. Implement configuration management system
 
-  - [ ] 2.1 Create ConfigManager class with file parsing
+
+
+
+
+
+  - [x] 2.1 Create ConfigManager class with file parsing
+
 
     - Implement loadConfig() to parse config.txt (circle count, arena size, physics params)
     - Implement loadBias() to parse bias.txt (player name, bias multiplier)
@@ -18,7 +23,9 @@
     - Add validation for all parameters (ranges, required fields)
     - _Requirements: 10.1, 10.2, 10.4, 5.1, 6.1_
 
-  - [ ] 2.2 Implement hot-reload system for runtime configuration
+
+  - [x] 2.2 Implement hot-reload system for runtime configuration
+
     - Use file watching (inotify on Linux, ReadDirectoryChangesW on Windows)
     - Reload bias and damage scaling files when modified
     - Apply changes within 1 second without restarting simulation
