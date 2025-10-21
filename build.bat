@@ -41,4 +41,3 @@ cd ..
 echo.
 echo Build complete! Executable is in build\bin\Release\
 echo.
-pause
