@@ -9,7 +9,6 @@
 
 - [x] 2. Implement configuration management system
 
-
   - [x] 2.1 Create ConfigManager class with file parsing
 
     - Implement loadConfig() to parse config.txt (circle count, arena size, physics params)
@@ -25,13 +24,10 @@
     - Apply changes within 1 second without restarting simulation
     - _Requirements: 5.5, 6.5_
 
-- [-] 3. Implement texture atlas system with ASTC compression
-
+- [x] 3. Implement texture atlas system with ASTC compression
 
 
   - [x] 3.1 Create image loading pipeline
-
-
 
     - Use stb_image to load JPG/PNG files from assets/players directory
     - Implement error handling for missing/corrupt files
@@ -40,8 +36,6 @@
 
   - [x] 3.2 Implement texture atlas packing
 
-
-
     - Create simple row-based packing algorithm (8192x8192 atlas)
     - Generate UV coordinates for each avatar
     - Support multiple atlases if >2000 avatars
@@ -49,15 +43,12 @@
 
   - [x] 3.3 Implement ASTC compression on GPU
 
-
-
     - Write CUDA kernel for ASTC 8x8 block compression
     - Generate 4 mipmap levels (full, 1/2, 1/4, 1/8 resolution)
     - Upload compressed data to CUDA texture memory
     - _Requirements: 3.2, 3.5, 9.3_
 
   - [x] 3.4 Implement streaming texture manager
-
 
     - Create LRU cache for 2000 most recently used textures
     - Implement on-demand texture loading based on visible circles
