@@ -4,6 +4,8 @@
 #include "config_manager.h"
 #include "physics_manager.h"
 #include "collision_manager.h"
+#include "rendering_manager.h"
+#include "texture_atlas_manager.h"
 
 int main(int argc, char** argv) {
     std::cout << "CUDA Battle Royale Simulation" << std::endl;
@@ -29,7 +31,21 @@ int main(int argc, char** argv) {
         return -1;
     }
     
+    // Set OpenGL version to 4.6 Core Profile
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    // Create window
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "CUDA Battle Royale Simulation", nullptr, nullptr);
+    if (!window) {
+        std::cerr << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    
     std::cout << "GLFW initialized successfully" << std::endl;
+    std::cout << "Window created: 1920x1080" << std::endl;
     
     // Initialize physics manager
     PhysicsManager physicsManager;
@@ -58,6 +74,17 @@ int main(int argc, char** argv) {
         return -1;
     }
     
+    // Initialize rendering manager
+    RenderingManager renderingManager;
+    if (!renderingManager.initialize(1000000, window)) {
+        std::cerr << "Failed to initialize rendering manager" << std::endl;
+        collisionManager.cleanup();
+        physicsManager.cleanup();
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        return -1;
+    }
+    
     std::cout << "\nSimulation initialized successfully!" << std::endl;
     std::cout << "Starting simulation loop..." << std::endl;
     
@@ -68,7 +95,7 @@ int main(int argc, char** argv) {
     int totalFrames = 0;
     const int maxFrames = 6000;  // Run for ~100 seconds at 60 FPS (for testing)
     
-    while (totalFrames < maxFrames && !physicsManager.hasWinner()) {
+    while (totalFrames < maxFrames && !physicsManager.hasWinner() && !glfwWindowShouldClose(window)) {
         // Calculate delta time
         double currentTime = glfwGetTime();
         float deltaTime = static_cast<float>(currentTime - lastTime);
@@ -107,6 +134,11 @@ int main(int argc, char** argv) {
             physicsManager.removeDeadCircles();
         }
         
+        // Render (placeholder texture atlas manager for now)
+        TextureAtlasManager dummyAtlas;  // TODO: Initialize properly when texture atlas is implemented
+        float zoomFactor = 1.0f;
+        renderingManager.render(physicsManager.getCircleData(), activeCount, zoomFactor, dummyAtlas);
+        
         // FPS counter
         frameCount++;
         totalFrames++;
@@ -135,8 +167,10 @@ int main(int argc, char** argv) {
     
     // Cleanup
     std::cout << "\nCleaning up..." << std::endl;
+    renderingManager.cleanup();
     collisionManager.cleanup();
     physicsManager.cleanup();
+    glfwDestroyWindow(window);
     glfwTerminate();
     
     std::cout << "Simulation ended successfully" << std::endl;

@@ -113,34 +113,49 @@
     - Declare winner when only one circle remains
     - _Requirements: 2.3, 2.4, 2.5_
 
-- [ ] 6. Implement GPU-driven rendering system
+- [x] 6. Implement GPU-driven rendering system
 
-  - [ ] 6.1 Set up OpenGL context and window
+
+
+
+
+
+  - [x] 6.1 Set up OpenGL context and window
+
+
 
     - Initialize GLFW window with OpenGL 4.6 context
     - Configure viewport and projection matrix
     - Enable depth testing and alpha blending
     - _Requirements: 8.1, 8.2_
 
-  - [ ] 6.2 Implement CUDA-OpenGL interop
+  - [x] 6.2 Implement CUDA-OpenGL interop
+
+
 
     - Create OpenGL VBO and register with CUDA
     - Implement zero-copy memory mapping
     - Set up CUDA streams for concurrent execution
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-  - [ ] 6.3 Implement frustum culling compute shader
+  - [x] 6.3 Implement frustum culling compute shader
+
+
 
     - Write CUDA kernel to test circles against frustum planes
     - Build list of visible circle indices
     - Update indirect draw command buffer
     - _Requirements: 3.3, 3.4, 8.3_
 
+
+
   - [ ] 6.4 Create vertex and fragment shaders
 
     - Write vertex shader for instanced rendering with LOD
     - Implement automatic LOD selection based on screen-space radius
     - Write fragment shader with texture sampling and alpha test
+
+
     - _Requirements: 3.3, 3.4, 3.5_
 
   - [ ] 6.5 Implement instanced rendering pipeline

@@ -71,6 +71,7 @@ set(SOURCES
     src/physics_manager.cu
     src/collision_manager.cu
     src/rendering_manager.cpp
+    src/rendering_kernels.cu
     src/ui_manager.cpp
 )
 
