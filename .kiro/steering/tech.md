@@ -48,3 +48,24 @@ make -j$(nproc)
 - `.cpp`: C++ source files
 - `.h`: Header files
 - `.vert/.frag`: GLSL shader files
+
+## Testing After Implementation
+
+After completing each task, you MUST test the simulator to verify your changes:
+
+**Windows:**
+```cmd
+run.bat
+```
+
+This will launch the simulator. Verify:
+- The application starts without errors
+- The UI displays correctly
+- Physics simulation runs smoothly
+- Performance metrics are reasonable
+- Your specific changes work as expected
+
+If the build is outdated, rebuild first:
+```cmd
+build.bat
+```
