@@ -29,6 +29,11 @@ public:
     Circle* getCircleData() { return d_circles_; }
     uint32_t getActiveCircleCount() const { return activeCount_; }
     
+    // Health management and circle removal
+    void removeDeadCircles();
+    uint32_t getWinnerID() const;
+    bool hasWinner() const { return activeCount_ == 1; }
+    
     void cleanup();
     
 private:

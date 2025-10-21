@@ -56,7 +56,6 @@
 
 - [x] 4. Implement CUDA physics simulation
 
-
   - [x] 4.1 Create Circle data structure and memory allocation
 
     - Define Circle struct with FP16 positions, FP32 critical data
@@ -80,16 +79,17 @@
     - Update circle radii for rendering
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 5. Implement spatial hashing collision detection
+- [x] 5. Implement spatial hashing collision detection
 
-  - [ ] 5.1 Create spatial hash grid structure
+
+  - [x] 5.1 Create spatial hash grid structure
 
     - Calculate optimal cell size (2 × max circle radius)
     - Allocate grid memory (width × height cells)
     - Implement grid construction kernel with atomic operations
     - _Requirements: 1.4, 2.1, 2.2_
 
-  - [ ] 5.2 Implement collision detection with shared memory
+  - [x] 5.2 Implement collision detection with shared memory
 
     - Write detectCollisionsOptimized() kernel using shared memory
     - Load 3x3 neighborhood into shared memory for fast access
@@ -97,7 +97,7 @@
     - Apply elastic collision physics (momentum transfer)
     - _Requirements: 1.3, 2.1, 2.2, 2.3_
 
-  - [ ] 5.3 Implement damage application system
+  - [x] 5.3 Implement damage application system
 
     - Calculate collision force based on relative velocities
     - Apply damage proportional to force and damage multiplier
@@ -105,7 +105,8 @@
     - Apply bias multiplier to reduce damage for biased players
     - _Requirements: 2.2, 2.3, 5.3, 6.2, 6.3_
 
-  - [ ] 5.4 Implement health check and circle removal
+  - [x] 5.4 Implement health check and circle removal
+
     - Write kernel to mark dead circles (health <= 0)
     - Implement parallel compaction to remove dead circles
     - Update active circle count

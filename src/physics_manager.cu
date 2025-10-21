@@ -199,6 +199,171 @@ float PhysicsManager::calculateScaleFactor(float userZoomFactor) const {
     return autoScaleFactor * clampedZoom;
 }
 
+// CUDA kernel to mark dead circles and compact array
+__global__ void markDeadCirclesKernel(
+    const PhysicsManager::Circle* circles,
+    uint32_t count,
+    uint32_t* aliveFlags
+) {
+    uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= count) return;
+    
+    // Mark as alive (1) if health > 0, dead (0) otherwise
+    aliveFlags[idx] = (circles[idx].health > 0.0f) ? 1 : 0;
+}
+
+// CUDA kernel for parallel prefix sum (scan) - simplified version
+__global__ void prefixSumKernel(
+    const uint32_t* input,
+    uint32_t* output,
+    uint32_t count
+) {
+    extern __shared__ uint32_t temp[];
+    
+    uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t tid = threadIdx.x;
+    
+    // Load input into shared memory
+    temp[tid] = (idx < count) ? input[idx] : 0;
+    __syncthreads();
+    
+    // Up-sweep phase
+    for (uint32_t stride = 1; stride < blockDim.x; stride *= 2) {
+        uint32_t index = (tid + 1) * stride * 2 - 1;
+        if (index < blockDim.x) {
+            temp[index] += temp[index - stride];
+        }
+        __syncthreads();
+    }
+    
+    // Down-sweep phase
+    if (tid == 0) {
+        temp[blockDim.x - 1] = 0;
+    }
+    __syncthreads();
+    
+    for (uint32_t stride = blockDim.x / 2; stride > 0; stride /= 2) {
+        uint32_t index = (tid + 1) * stride * 2 - 1;
+        if (index < blockDim.x) {
+            uint32_t t = temp[index - stride];
+            temp[index - stride] = temp[index];
+            temp[index] += t;
+        }
+        __syncthreads();
+    }
+    
+    // Write output
+    if (idx < count) {
+        output[idx] = temp[tid] + input[idx];
+    }
+}
+
+// CUDA kernel to compact alive circles
+__global__ void compactCirclesKernel(
+    const PhysicsManager::Circle* inputCircles,
+    PhysicsManager::Circle* outputCircles,
+    const uint32_t* aliveFlags,
+    const uint32_t* prefixSum,
+    uint32_t count
+) {
+    uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= count) return;
+    
+    // If this circle is alive, copy it to its new position
+    if (aliveFlags[idx] == 1) {
+        uint32_t newIdx = prefixSum[idx] - 1;  // Prefix sum gives us the new index
+        outputCircles[newIdx] = inputCircles[idx];
+    }
+}
+
+void PhysicsManager::removeDeadCircles() {
+    if (activeCount_ == 0) return;
+    
+    // Allocate temporary buffers
+    uint32_t* d_aliveFlags;
+    uint32_t* d_prefixSum;
+    PhysicsManager::Circle* d_tempCircles;
+    
+    cudaMalloc(&d_aliveFlags, activeCount_ * sizeof(uint32_t));
+    cudaMalloc(&d_prefixSum, activeCount_ * sizeof(uint32_t));
+    cudaMalloc(&d_tempCircles, activeCount_ * sizeof(Circle));
+    
+    // Mark dead circles
+    const int threadsPerBlock = 256;
+    const int numBlocks = (activeCount_ + threadsPerBlock - 1) / threadsPerBlock;
+    
+    markDeadCirclesKernel<<<numBlocks, threadsPerBlock, 0, physicsStream_>>>(
+        d_circles_,
+        activeCount_,
+        d_aliveFlags
+    );
+    
+    // Compute prefix sum for compaction
+    // For simplicity, use a CPU-based approach for now (can be optimized with thrust or custom GPU scan)
+    uint32_t* h_aliveFlags = new uint32_t[activeCount_];
+    uint32_t* h_prefixSum = new uint32_t[activeCount_];
+    
+    cudaMemcpy(h_aliveFlags, d_aliveFlags, activeCount_ * sizeof(uint32_t), cudaMemcpyDeviceToHost);
+    
+    // CPU prefix sum
+    uint32_t sum = 0;
+    for (uint32_t i = 0; i < activeCount_; i++) {
+        sum += h_aliveFlags[i];
+        h_prefixSum[i] = sum;
+    }
+    
+    uint32_t newActiveCount = sum;
+    
+    // Copy prefix sum back to device
+    cudaMemcpy(d_prefixSum, h_prefixSum, activeCount_ * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    
+    // Compact circles
+    compactCirclesKernel<<<numBlocks, threadsPerBlock, 0, physicsStream_>>>(
+        d_circles_,
+        d_tempCircles,
+        d_aliveFlags,
+        d_prefixSum,
+        activeCount_
+    );
+    
+    // Copy compacted array back
+    if (newActiveCount > 0) {
+        cudaMemcpy(d_circles_, d_tempCircles, newActiveCount * sizeof(Circle), cudaMemcpyDeviceToDevice);
+    }
+    
+    // Update active count
+    uint32_t removedCount = activeCount_ - newActiveCount;
+    if (removedCount > 0) {
+        std::cout << "Removed " << removedCount << " dead circles. Active: " << newActiveCount << std::endl;
+    }
+    
+    activeCount_ = newActiveCount;
+    
+    // Cleanup
+    delete[] h_aliveFlags;
+    delete[] h_prefixSum;
+    cudaFree(d_aliveFlags);
+    cudaFree(d_prefixSum);
+    cudaFree(d_tempCircles);
+    
+    // Check for winner
+    if (activeCount_ == 1) {
+        std::cout << "WINNER DETECTED! Only 1 circle remains!" << std::endl;
+    }
+}
+
+uint32_t PhysicsManager::getWinnerID() const {
+    if (activeCount_ != 1) {
+        return UINT32_MAX;  // No winner yet
+    }
+    
+    // Copy the last circle to host to get its avatar ID
+    Circle h_winner;
+    cudaMemcpy(&h_winner, d_circles_, sizeof(Circle), cudaMemcpyDeviceToHost);
+    
+    return h_winner.avatarID;
+}
+
 void PhysicsManager::cleanup() {
     if (d_circles_) {
         cudaFree(d_circles_);
