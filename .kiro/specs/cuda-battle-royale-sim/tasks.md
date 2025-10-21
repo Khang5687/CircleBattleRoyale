@@ -10,19 +10,13 @@
 - [x] 2. Implement configuration management system
 
 
-
-
-
-
   - [x] 2.1 Create ConfigManager class with file parsing
-
 
     - Implement loadConfig() to parse config.txt (circle count, arena size, physics params)
     - Implement loadBias() to parse bias.txt (player name, bias multiplier)
     - Implement loadDamageScaling() to parse damage_scaling.txt (threshold, multiplier)
     - Add validation for all parameters (ranges, required fields)
     - _Requirements: 10.1, 10.2, 10.4, 5.1, 6.1_
-
 
   - [x] 2.2 Implement hot-reload system for runtime configuration
 
@@ -31,9 +25,13 @@
     - Apply changes within 1 second without restarting simulation
     - _Requirements: 5.5, 6.5_
 
-- [ ] 3. Implement texture atlas system with ASTC compression
+- [-] 3. Implement texture atlas system with ASTC compression
 
-  - [ ] 3.1 Create image loading pipeline
+
+
+  - [x] 3.1 Create image loading pipeline
+
+
 
     - Use stb_image to load JPG/PNG files from assets/players directory
     - Implement error handling for missing/corrupt files
