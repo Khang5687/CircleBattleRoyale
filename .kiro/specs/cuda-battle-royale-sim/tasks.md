@@ -26,7 +26,6 @@
 
 - [x] 3. Implement texture atlas system with ASTC compression
 
-
   - [x] 3.1 Create image loading pipeline
 
     - Use stb_image to load JPG/PNG files from assets/players directory
@@ -55,9 +54,10 @@
     - Add eviction policy when memory pressure is high
     - _Requirements: 3.1, 9.1, 9.4_
 
-- [ ] 4. Implement CUDA physics simulation
+- [x] 4. Implement CUDA physics simulation
 
-  - [ ] 4.1 Create Circle data structure and memory allocation
+
+  - [x] 4.1 Create Circle data structure and memory allocation
 
     - Define Circle struct with FP16 positions, FP32 critical data
     - Allocate pinned host memory and CUDA device memory
@@ -65,7 +65,7 @@
     - Apply bias multipliers from configuration
     - _Requirements: 1.1, 5.2, 9.1, 9.2_
 
-  - [ ] 4.2 Implement physics update kernel
+  - [x] 4.2 Implement physics update kernel
 
     - Write updatePhysicsKernel() for Euler integration
     - Update positions based on velocities and deltaTime
@@ -73,7 +73,8 @@
     - Use 256 threads per block for optimal occupancy
     - _Requirements: 1.2, 1.3, 1.4_
 
-  - [ ] 4.3 Implement dynamic scaling system
+  - [x] 4.3 Implement dynamic scaling system
+
     - Calculate scale factor based on circle count (inversely proportional to sqrt(count))
     - Combine with user zoom factor (10-500%)
     - Update circle radii for rendering
